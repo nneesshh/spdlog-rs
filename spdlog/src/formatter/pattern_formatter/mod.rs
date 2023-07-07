@@ -14,11 +14,11 @@
 #[path = "pattern/mod.rs"]
 pub mod __pattern;
 
-use std::{fmt::Write, ops::Range, sync::Arc};
+use std::{ops::Range, sync::Arc};
 
 use crate::{
     formatter::{FmtExtraInfo, FmtExtraInfoBuilder, Formatter},
-    Error, Record, StringBuf,
+    Record, StringBuf,
 };
 
 #[rustfmt::skip] // rustfmt currently breaks some empty lines if `#[doc = include_str!("xxx")]` exists
@@ -460,7 +460,8 @@ impl Pattern for str {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(self).map_err(Error::FormatRecord)
+        dest.push_str(self);
+        Ok(())
     }
 }
 

@@ -1,8 +1,6 @@
-use std::fmt::Write;
-
 use crate::{
     formatter::pattern_formatter::{Pattern, PatternContext},
-    Error, Record, StringBuf,
+    Record, StringBuf,
 };
 
 /// A pattern that writes the level of a log record into the output. Examples:
@@ -17,8 +15,8 @@ impl Pattern for Level {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(record.level().as_str())
-            .map_err(Error::FormatRecord)
+        dest.push_str(record.level().as_str());
+        Ok(())
     }
 }
 
@@ -34,7 +32,7 @@ impl Pattern for ShortLevel {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(record.level().as_short_str())
-            .map_err(Error::FormatRecord)
+        dest.push_str(record.level().as_short_str());
+        Ok(())
     }
 }

@@ -19,11 +19,10 @@ impl Pattern for Source {
     ) -> crate::Result<()> {
         if let Some(loc) = record.source_location() {
             (|| {
-                dest.write_str(loc.file())?;
-                dest.write_char(':')?;
-                write!(dest, "{}", loc.line())
-            })()
-            .map_err(Error::FormatRecord)?;
+                dest.push_str(loc.file());
+                dest.push(':');
+                write!(dest, "{}", loc.line()).unwrap();
+            })();
         }
         Ok(())
     }
@@ -42,8 +41,7 @@ impl Pattern for SourceFilename {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         if let Some(loc) = record.source_location() {
-            dest.write_str(loc.file_name())
-                .map_err(Error::FormatRecord)?;
+            dest.push_str(loc.file_name());
         }
         Ok(())
     }
@@ -62,7 +60,7 @@ impl Pattern for SourceFile {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         if let Some(loc) = record.source_location() {
-            dest.write_str(loc.file()).map_err(Error::FormatRecord)?;
+            dest.push_str(loc.file());
         }
         Ok(())
     }
@@ -117,8 +115,7 @@ impl Pattern for SourceModulePath {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         if let Some(loc) = record.source_location() {
-            dest.write_str(loc.module_path())
-                .map_err(Error::FormatRecord)?;
+            dest.push_str(loc.module_path());
         }
         Ok(())
     }

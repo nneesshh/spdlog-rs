@@ -26,7 +26,8 @@ impl Pattern for AbbrWeekdayName {
             .weekday_name()
             .short;
 
-        dest.write_str(name).map_err(Error::FormatRecord)
+        dest.push_str(name);
+        Ok(())
     }
 }
 
@@ -48,7 +49,8 @@ impl Pattern for WeekdayName {
             .weekday_name()
             .full;
 
-        dest.write_str(name).map_err(Error::FormatRecord)
+        dest.push_str(name);
+        Ok(())
     }
 }
 
@@ -70,7 +72,8 @@ impl Pattern for AbbrMonthName {
             .month_name()
             .short;
 
-        dest.write_str(name).map_err(Error::FormatRecord)
+        dest.push_str(name);
+        Ok(())
     }
 }
 
@@ -92,7 +95,8 @@ impl Pattern for MonthName {
             .month_name()
             .full;
 
-        dest.write_str(name).map_err(Error::FormatRecord)
+        dest.push_str(name);
+        Ok(())
     }
 }
 
@@ -131,21 +135,21 @@ impl Pattern for FullDateTime {
         };
 
         (|| {
-            dest.write_str(abbr_weekday_name)?;
-            dest.write_char(' ')?;
-            dest.write_str(abbr_month_name)?;
-            dest.write_char(' ')?;
-            dest.write_str(&day_str)?;
-            dest.write_char(' ')?;
-            dest.write_str(&hour_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&minute_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&second_str)?;
-            dest.write_char(' ')?;
-            dest.write_str(&year_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(abbr_weekday_name);
+            dest.push(' ');
+            dest.push_str(abbr_month_name);
+            dest.push(' ');
+            dest.push_str(&day_str);
+            dest.push(' ');
+            dest.push_str(&hour_str);
+            dest.push(':');
+            dest.push_str(&minute_str);
+            dest.push(':');
+            dest.push_str(&second_str);
+            dest.push(' ');
+            dest.push_str(&year_str)
+        })();
+        Ok(())
     }
 }
 
@@ -162,7 +166,8 @@ impl Pattern for ShortYear {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let year_short_str = LOCAL_TIME_CACHER.lock().get(record.time()).year_short_str();
-        dest.write_str(&year_short_str).map_err(Error::FormatRecord)
+        dest.push_str(&year_short_str);
+        Ok(())
     }
 }
 
@@ -179,7 +184,8 @@ impl Pattern for Year {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let year_str = LOCAL_TIME_CACHER.lock().get(record.time()).year_str();
-        dest.write_str(&year_str).map_err(Error::FormatRecord)
+        dest.push_str(&year_str);
+        Ok(())
     }
 }
 
@@ -206,13 +212,13 @@ impl Pattern for Date {
         };
 
         (|| {
-            dest.write_str(&year_str)?;
-            dest.write_char('-')?;
-            dest.write_str(&month_str)?;
-            dest.write_char('-')?;
-            dest.write_str(&day_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(&year_str);
+            dest.push('-');
+            dest.push_str(&month_str);
+            dest.push('-');
+            dest.push_str(&day_str)
+        })();
+        Ok(())
     }
 }
 
@@ -239,13 +245,13 @@ impl Pattern for ShortDate {
         };
 
         (|| {
-            dest.write_str(&month_str)?;
-            dest.write_char('/')?;
-            dest.write_str(&day_str)?;
-            dest.write_char('/')?;
-            dest.write_str(&year_short_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(&month_str);
+            dest.push('/');
+            dest.push_str(&day_str);
+            dest.push('/');
+            dest.push_str(&year_short_str)
+        })();
+        Ok(())
     }
 }
 
@@ -262,7 +268,8 @@ impl Pattern for Month {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let month_str = LOCAL_TIME_CACHER.lock().get(record.time()).month_str();
-        dest.write_str(&month_str).map_err(Error::FormatRecord)
+        dest.push_str(&month_str);
+        Ok(())
     }
 }
 
@@ -279,7 +286,8 @@ impl Pattern for Day {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let day_str = LOCAL_TIME_CACHER.lock().get(record.time()).day_str();
-        dest.write_str(&day_str).map_err(Error::FormatRecord)
+        dest.push_str(&day_str);
+        Ok(())
     }
 }
 
@@ -296,7 +304,8 @@ impl Pattern for Hour {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let hour_str = LOCAL_TIME_CACHER.lock().get(record.time()).hour_str();
-        dest.write_str(&hour_str).map_err(Error::FormatRecord)
+        dest.push_str(&hour_str);
+        Ok(())
     }
 }
 
@@ -313,7 +322,8 @@ impl Pattern for Hour12 {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let hour_12_str = LOCAL_TIME_CACHER.lock().get(record.time()).hour12_str();
-        dest.write_str(&hour_12_str).map_err(Error::FormatRecord)
+        dest.push_str(&hour_12_str);
+        Ok(())
     }
 }
 
@@ -330,7 +340,8 @@ impl Pattern for Minute {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let minute_str = LOCAL_TIME_CACHER.lock().get(record.time()).minute_str();
-        dest.write_str(&minute_str).map_err(Error::FormatRecord)
+        dest.push_str(&minute_str);
+        Ok(())
     }
 }
 
@@ -347,7 +358,8 @@ impl Pattern for Second {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let second_str = LOCAL_TIME_CACHER.lock().get(record.time()).second_str();
-        dest.write_str(&second_str).map_err(Error::FormatRecord)
+        dest.push_str(&second_str);
+        Ok(())
     }
 }
 
@@ -419,7 +431,8 @@ impl Pattern for AmPm {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let am_pm_str = LOCAL_TIME_CACHER.lock().get(record.time()).am_pm_str();
-        dest.write_str(am_pm_str).map_err(Error::FormatRecord)
+        dest.push_str(am_pm_str);
+        Ok(())
     }
 }
 
@@ -447,15 +460,15 @@ impl Pattern for Time12 {
         };
 
         (|| {
-            dest.write_str(&hour_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&minute_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&second_str)?;
-            dest.write_str(" ")?;
-            dest.write_str(am_pm_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(&hour_str);
+            dest.push(':');
+            dest.push_str(&minute_str);
+            dest.push(':');
+            dest.push_str(&second_str);
+            dest.push(' ');
+            dest.push_str(am_pm_str)
+        })();
+        Ok(())
     }
 }
 
@@ -478,11 +491,11 @@ impl Pattern for ShortTime {
         };
 
         (|| {
-            dest.write_str(&hour_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&minute_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(&hour_str);
+            dest.push(':');
+            dest.push_str(&minute_str)
+        })();
+        Ok(())
     }
 }
 
@@ -509,13 +522,13 @@ impl Pattern for Time {
         };
 
         (|| {
-            dest.write_str(&hour_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&minute_str)?;
-            dest.write_char(':')?;
-            dest.write_str(&second_str)
-        })()
-        .map_err(Error::FormatRecord)
+            dest.push_str(&hour_str);
+            dest.push(':');
+            dest.push_str(&minute_str);
+            dest.push(':');
+            dest.push_str(&second_str)
+        })();
+        Ok(())
     }
 }
 
@@ -532,7 +545,8 @@ impl Pattern for TzOffset {
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
         let tz_offset_str = LOCAL_TIME_CACHER.lock().get(record.time()).tz_offset_str();
-        dest.write_str(&tz_offset_str).map_err(Error::FormatRecord)
+        dest.push_str(&tz_offset_str);
+        Ok(())
     }
 }
 
@@ -552,7 +566,7 @@ impl Pattern for UnixTimestamp {
             .lock()
             .get(record.time())
             .unix_timestamp_str();
-        dest.write_str(&unix_timestamp_str)
-            .map_err(Error::FormatRecord)
+        dest.push_str(&unix_timestamp_str);
+        Ok(())
     }
 }

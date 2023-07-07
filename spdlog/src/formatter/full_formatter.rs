@@ -64,38 +64,38 @@ impl FullFormatter {
         {
             let mut local_time_cacher = LOCAL_TIME_CACHER.lock();
             let time = local_time_cacher.get(record.time());
-            dest.write_str("[")?;
-            dest.write_str(&time.full_second_str())?;
-            dest.write_str(".")?;
+            dest.push_str("[");
+            dest.push_str(&time.full_second_str());
+            dest.push_str(".");
             write!(dest, "{:03}", time.millisecond())?;
-            dest.write_str("] [")?;
+            dest.push_str("] [");
         }
 
         if let Some(logger_name) = record.logger_name() {
-            dest.write_str(logger_name)?;
-            dest.write_str("] [")?;
+            dest.push_str(logger_name);
+            dest.push_str("] [");
         }
 
         let style_range_begin = dest.len();
 
-        dest.write_str(record.level().as_str())?;
+        dest.push_str(record.level().as_str());
 
         let style_range_end = dest.len();
 
         if let Some(srcloc) = record.source_location() {
-            dest.write_str("] [")?;
-            dest.write_str(srcloc.module_path())?;
-            dest.write_str(", ")?;
-            dest.write_str(srcloc.file())?;
-            dest.write_str(":")?;
+            dest.push_str("] [");
+            dest.push_str(srcloc.module_path());
+            dest.push_str(", ");
+            dest.push_str(srcloc.file());
+            dest.push_str(":");
             write!(dest, "{}", srcloc.line())?;
         }
 
-        dest.write_str("] ")?;
-        dest.write_str(record.payload())?;
+        dest.push_str("] ");
+        dest.push_str(record.payload());
 
         if self.with_eol {
-            dest.write_str(EOL)?;
+            dest.push_str(EOL);
         }
 
         Ok(FmtExtraInfo {

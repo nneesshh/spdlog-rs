@@ -1,8 +1,6 @@
-use std::fmt::Write;
-
 use crate::{
     formatter::pattern_formatter::{Pattern, PatternContext},
-    Error, Record, StringBuf,
+    Record, StringBuf,
 };
 
 /// A pattern that writes an EOL character into the output.
@@ -22,6 +20,7 @@ impl Pattern for Eol {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(crate::EOL).map_err(Error::FormatRecord)
+        dest.push_str(crate::EOL);
+        Ok(())
     }
 }

@@ -1,8 +1,6 @@
-use std::fmt::Write;
-
 use crate::{
     formatter::pattern_formatter::{Pattern, PatternContext},
-    Error, Record, StringBuf,
+    Record, StringBuf,
 };
 
 /// A pattern that writes the logger's name into the output. Example:
@@ -17,7 +15,7 @@ impl Pattern for LoggerName {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(record.logger_name().unwrap_or(""))
-            .map_err(Error::FormatRecord)
+        dest.push_str(record.logger_name().unwrap_or(""));
+        Ok(())
     }
 }

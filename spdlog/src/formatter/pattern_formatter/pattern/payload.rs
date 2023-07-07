@@ -1,8 +1,6 @@
-use std::fmt::Write;
-
 use crate::{
     formatter::pattern_formatter::{Pattern, PatternContext},
-    Error, Record, StringBuf,
+    Record, StringBuf,
 };
 
 /// A pattern that writes the payload of a log record into output. Example: `log
@@ -17,7 +15,7 @@ impl Pattern for Payload {
         dest: &mut StringBuf,
         _ctx: &mut PatternContext,
     ) -> crate::Result<()> {
-        dest.write_str(record.payload())
-            .map_err(Error::FormatRecord)
+        dest.push_str(record.payload());
+        Ok(())
     }
 }

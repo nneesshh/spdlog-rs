@@ -1,10 +1,10 @@
-use std::{env, fmt::Write, fs, path::PathBuf, thread::sleep, time::Duration};
+use std::{env, fs, path::PathBuf, thread::sleep, time::Duration};
 
 use crate::{
     formatter::{FmtExtraInfo, Formatter},
     sink::Sink,
     sync::*,
-    Error, ErrorHandler, LevelFilter, Logger, LoggerBuilder, Record, Result, StringBuf,
+    ErrorHandler, LevelFilter, Logger, LoggerBuilder, Record, Result, StringBuf,
 };
 
 pub static TEST_LOGS_PATH: Lazy<PathBuf> = Lazy::new(|| {
@@ -124,8 +124,7 @@ impl NoModFormatter {
 
 impl Formatter for NoModFormatter {
     fn format(&self, record: &Record, dest: &mut StringBuf) -> Result<FmtExtraInfo> {
-        dest.write_str(record.payload())
-            .map_err(Error::FormatRecord)?;
+        dest.push_str(record.payload());
 
         Ok(FmtExtraInfo::new())
     }

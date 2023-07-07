@@ -26,6 +26,14 @@ fn test_source_location() {
     log::set_max_level(log::LevelFilter::Trace);
 
     log::info!("text");
+
+    #[cfg(windows)]
+    assert_eq!(
+        String::from_utf8(sink.clone_target()).unwrap(),
+        "(log_crate_proxy::log_crate_proxy.rs) text\r\n"
+    );
+
+    #[cfg(unix)]
     assert_eq!(
         String::from_utf8(sink.clone_target()).unwrap(),
         "(log_crate_proxy::log_crate_proxy.rs) text\n"

@@ -32,22 +32,22 @@ impl JournaldFormatter {
             }
         }
 
-        dest.write_str("[")?;
+        dest.push_str("[");
 
         if let Some(logger_name) = record.logger_name() {
-            dest.write_str(logger_name)?;
-            dest.write_str("] [")?;
+            dest.push_str(logger_name)?;
+            dest.push_str("] [");
         }
 
         let style_range_begin = dest.len();
 
-        dest.write_str(record.level().as_str())?;
+        dest.push_str(record.level().as_str());
 
         let style_range_end = dest.len();
 
-        dest.write_str("] ")?;
-        dest.write_str(record.payload())?;
-        dest.write_str(EOL)?;
+        dest.push_str("] ");
+        dest.push_str(record.payload());
+        dest.push_str(EOL);
 
         Ok(FmtExtraInfo {
             style_range: Some(style_range_begin..style_range_end),
