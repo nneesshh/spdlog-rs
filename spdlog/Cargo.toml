@@ -16,6 +16,8 @@ all-features = true
 name = "spdlog"
 
 [features]
+default = ["log", "multi-thread", "source-location"]
+
 level-off      = []
 level-critical = []
 level-error    = []
@@ -38,20 +40,20 @@ libsystemd = ["libsystemd-sys"]
 multi-thread = ["crossbeam"]
 
 [dependencies]
-arc-swap = "1.5.1"
-atomic = "0.5.1"
-cfg-if = "1.0.0"
-chrono = "0.4.22"
-crossbeam = { version = "0.8.2", optional = true }
-flexible-string = { version = "0.1.0", optional = true }
-if_chain = "1.0.2"
+arc-swap = "1"
+atomic = "0.5"
+cfg-if = "1"
+chrono = "0.4"
+crossbeam = { version = "0.8", optional = true }
+flexible-string = { version = "0.1", optional = true }
+if_chain = "1"
 is-terminal = "0.4"
 log = { version = "0.4", optional = true }
-once_cell = "1.16.0"
-spdlog-macros = { version = "0.1.0", path = "../spdlog-macros" }
-spin = "0.9.8"
-static_assertions = "1.1.0"
-thiserror = "1.0.37"
+once_cell = "1"
+spdlog-macros = { version = "0.1", path = "../spdlog-macros" }
+spin = "0.9"
+static_assertions = "1"
+thiserror = "1"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["consoleapi", "debugapi", "handleapi", "processenv", "processthreadsapi", "winbase", "wincon"] }
@@ -60,26 +62,26 @@ winapi = { version = "0.3.9", features = ["consoleapi", "debugapi", "handleapi",
 libc = "0.2"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-libsystemd-sys = { version = "0.9.3", optional = true }
+libsystemd-sys = { version = "0.9", optional = true }
 
 [dev-dependencies]
-clap = { version = "3.2.23", features = ["derive"] }
-crossbeam = "0.8.2"
-regex = "1.7.0"
+clap = { version = "3", features = ["derive"] }
+crossbeam = "0.8"
+regex = "1"
 
 # The following dependencies are used for benchmarks
-log = "=0.4.17"
-slog = "=2.7.0"
-sloggers = "=2.1.1"
-log4rs = "=1.2.0"
-fern = "=0.6.1"
-flexi_logger = "=0.24.1"
-tracing = "=0.1.37"
-tracing-subscriber = "=0.3.16"
-tracing-appender = "=0.2.2"
+log = "=0.4"
+slog = "=2"
+sloggers = "=2"
+log4rs = "=1"
+fern = "=0.6"
+flexi_logger = "=0.24"
+tracing = "=0.1"
+tracing-subscriber = "=0.3"
+tracing-appender = "=0.2"
 
 [build-dependencies]
-rustc_version = "0.4.0"
+rustc_version = "0.4"
 
 [[bench]]
 name = "compare_with_cpp_spdlog"

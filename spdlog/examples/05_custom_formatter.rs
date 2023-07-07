@@ -8,6 +8,9 @@ fn main() {
 
     // 2. When you need to implement more complex formatting logic
     impl_manually();
+
+    // 3.
+    use_pattern_formatter_by_async_sink();
 }
 
 fn use_pattern_formatter() {
@@ -74,4 +77,52 @@ fn impl_manually() {
     }
 
     info!("format by `MyFormatter` (impl manually)");
+}
+
+fn use_pattern_formatter_by_async_sink() {
+    use spdlog::{
+        formatter::{pattern, PatternFormatter},
+        prelude::*,
+    };
+
+    let sss_sink: std::sync::Arc<dyn spdlog::sink::Sink> = std::sync::Arc::new(
+        spdlog::sink::StdStreamSink::builder()
+            .std_stream(spdlog::sink::StdStream::Stdout)
+            .style_mode(spdlog::terminal_style::StyleMode::Never)
+            .build()
+            .unwrap(),
+    );
+
+    let async_sink = std::sync::Arc::new(
+        spdlog::sink::AsyncPoolSink::builder()
+            .sink(sss_sink)
+            .build()
+            .unwrap(),
+    );
+
+    let logger: std::sync::Arc<spdlog::Logger> =
+        std::sync::Arc::new(spdlog::Logger::builder().sink(async_sink).build().unwrap());
+
+    spdlog::set_default_logger(logger);
+
+    // Building a pattern formatter with a pattern.
+    //
+    // The `pattern!` macro will parse the template string at compile-time.
+    // See the documentation of `pattern!` macro for more usage.
+    let new_formatter: Box<PatternFormatter<_>> = Box::new(PatternFormatter::new(pattern!(
+        "{datetime} - {^{level}} - {payload}{eol}{tid}"
+    )));
+
+    // Setting the new formatter for each sink of the default logger.
+    for sink in spdlog::default_logger().sinks() {
+        sink.set_formatter(new_formatter.clone())
+    }
+
+    info!("format by `PatternFormatter`");
+    spdlog::default_logger().flush();
+
+    for _ in 1.. {
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        spdlog::default_logger().flush();
+    }
 }
