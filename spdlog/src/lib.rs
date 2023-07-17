@@ -303,10 +303,13 @@ cfg_if! {
     }
 }
 
+/// End of line
 #[cfg(not(windows))]
-pub(crate) const EOL: &str = "\n";
+pub const EOL: &str = "\n";
+
+/// End of line
 #[cfg(windows)]
-pub(crate) const EOL: &str = "\r\n";
+pub const EOL: &str = "\r\n";
 
 static DEFAULT_LOGGER: OnceCell<ArcSwap<Logger>> = OnceCell::new();
 

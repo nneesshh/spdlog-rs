@@ -4,6 +4,7 @@
 //!
 //! [`Sink::set_formatter`]: crate::sink::Sink::set_formatter
 
+mod iso8601_datetime_formatter;
 mod full_formatter;
 #[cfg(any(
     all(target_os = "linux", feature = "native", feature = "libsystemd"),
@@ -23,6 +24,8 @@ pub use full_formatter::*;
 pub(crate) use journald_formatter::*;
 pub(crate) use local_time_cacher::*;
 pub use pattern_formatter::*;
+
+pub use iso8601_datetime_formatter::*;
 
 use crate::{Record, Result, StringBuf};
 

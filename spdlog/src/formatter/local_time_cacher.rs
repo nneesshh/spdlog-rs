@@ -35,6 +35,7 @@ struct CacheValues {
     local_time: DateTime<Local>,
     is_leap_second: bool,
     full_second_str: RefCell<Option<String>>,
+    full_iso_8601_str: RefCell<Option<String>>,
     year: RefCell<Option<i32>>,
     year_str: RefCell<Option<Arc<String>>>,
     year_short_str: RefCell<Option<Arc<String>>>,
@@ -156,6 +157,31 @@ impl<'a> TimeDate<'a> {
                     self.hour(),
                     self.minute(),
                     self.second()
+                )
+            })
+            .as_mut()
+        })
+    }
+
+    // A closed Rust PR "WIP: Downgrading of `RefMut` to `Ref`"
+    // https://github.com/rust-lang/rust/pull/57401
+    // There is nothing like `RefMut::downgrade()` for now, just keep in mind don't
+    // modify the return value :)
+    #[must_use]
+    pub(crate) fn full_iso_8601_str(&self) -> RefMut<'_, str> {
+        RefMut::map(self.cached.full_iso_8601_str.borrow_mut(), |opt| {
+            opt.get_or_insert_with(|| {
+                // `local_time.format("%Y-%m-%dT%H:%M:%S.%9f%:z")` is slower than this way
+                format!(
+                    "{}-{:02}-{:02}T{:02}:{:02}:{:02}.{:09}{:02}",
+                    self.year(),
+                    self.month(),
+                    self.day(),
+                    self.hour(),
+                    self.minute(),
+                    self.second(),
+                    self.nanosecond(),
+                    self.tz_offset_str(),
                 )
             })
             .as_mut()
@@ -330,6 +356,7 @@ impl CacheValues {
             local_time: utc_time.into(),
             is_leap_second,
             full_second_str: RefCell::new(None),
+            full_iso_8601_str: RefCell::new(None),
             year: RefCell::new(None),
             year_str: RefCell::new(None),
             year_short_str: RefCell::new(None),

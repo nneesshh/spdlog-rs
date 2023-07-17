@@ -77,8 +77,9 @@ cfg_if! {
 }
 
 impl Level {
+    /// From usize to enum
     #[must_use]
-    fn from_usize(u: usize) -> Option<Level> {
+    pub fn from_usize(u: usize) -> Option<Level> {
         match u {
             0 => Some(Level::Critical),
             1 => Some(Level::Error),
@@ -244,6 +245,7 @@ impl LevelFilter {
     /// See the documentation of [`LevelFilter`].
     #[must_use]
     pub fn compare(&self, level: Level) -> bool {
+        //println!("stored={:?}", self);
         self.__compare_const(level)
     }
 

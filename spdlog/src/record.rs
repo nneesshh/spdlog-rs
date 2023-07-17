@@ -2,6 +2,7 @@
 
 use std::{
     borrow::{Borrow, Cow},
+    cell::RefCell,
     time::SystemTime,
 };
 
@@ -33,6 +34,7 @@ struct RecordInner {
     level: Level,
     source_location: Option<SourceLocation>,
     time: SystemTime,
+    tid: u64,
 }
 
 impl<'a> Record<'a> {
@@ -51,6 +53,7 @@ impl<'a> Record<'a> {
                 level,
                 source_location: None,
                 time: SystemTime::now(),
+                tid: get_current_tid(),
             }),
         }
     }
@@ -106,6 +109,13 @@ impl<'a> Record<'a> {
         self.inner.time
     }
 
+    /// Gets the TID when the record was created.
+    // TODO: Public this new method to users in the next minor version
+    #[must_use]
+    pub(crate) fn tid(&self) -> u64 {
+        self.inner.tid
+    }
+
     // When adding more getters, also add to `RecordOwned`
 
     #[cfg(feature = "log")]
@@ -127,6 +137,9 @@ impl<'a> Record<'a> {
                 level: record.level().into(),
                 source_location: SourceLocation::from_log_crate_record(record),
                 time,
+                // For records from `log` crate, they never seem to come from different threads, so
+                // getting the current TID here should be correct
+                tid: get_current_tid(),
             }),
         }
     }
@@ -242,4 +255,39 @@ impl<'a> RecordBuilder<'a> {
     pub(crate) fn build(self) -> Record<'a> {
         self.record
     }
+}
+
+/// Get current thread id
+pub fn get_current_tid() -> u64 {
+    #[cfg(target_os = "linux")]
+    #[must_use]
+    fn get_current_tid_inner() -> u64 {
+        // https://github.com/SpriteOvO/spdlog-rs/issues/31
+        //
+        // We don't use `gettid` since earlier glibc versions (before v2.30) did not
+        // provide a wrapper for this system call.
+        let tid = unsafe { libc::syscall(libc::SYS_gettid) };
+        tid as u64
+    }
+
+    #[cfg(target_os = "macos")]
+    #[must_use]
+    fn get_current_tid_inner() -> u64 {
+        let mut tid = 0;
+        unsafe { libc::pthread_threadid_np(0, &mut tid) };
+        tid
+    }
+
+    #[cfg(target_os = "windows")]
+    #[must_use]
+    fn get_current_tid_inner() -> u64 {
+        let tid = unsafe { winapi::um::processthreadsapi::GetCurrentThreadId() };
+        tid as u64
+    }
+
+    thread_local! {
+        static TID: RefCell<Option<u64>> = RefCell::new(None);
+    }
+
+    TID.with(|tid| *tid.borrow_mut().get_or_insert_with(get_current_tid_inner))
 }
