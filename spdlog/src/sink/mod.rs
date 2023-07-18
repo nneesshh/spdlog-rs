@@ -47,6 +47,7 @@
 
 #[cfg(feature = "multi-thread")]
 pub(crate) mod async_sink;
+mod date_and_hour_rotating_file_sink;
 mod file_sink;
 mod helper;
 #[cfg(any(
@@ -62,6 +63,7 @@ mod write_sink;
 
 #[cfg(feature = "multi-thread")]
 pub use async_sink::*;
+pub use date_and_hour_rotating_file_sink::*;
 pub use file_sink::*;
 #[cfg(any(
     all(target_os = "linux", feature = "native", feature = "libsystemd"),
