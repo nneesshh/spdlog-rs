@@ -16,7 +16,7 @@ all-features = true
 name = "spdlog"
 
 [features]
-default = ["log", "multi-thread", "source-location"]
+default = ["log", "multi-thread", "source-location", "flexible-string"]
 
 level-off      = []
 level-critical = []
