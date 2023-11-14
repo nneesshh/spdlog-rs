@@ -79,6 +79,7 @@ cfg_if! {
 impl Level {
     /// From usize to enum
     #[must_use]
+    #[inline(always)]
     pub fn from_usize(u: usize) -> Option<Level> {
         match u {
             0 => Some(Level::Critical),
@@ -92,28 +93,33 @@ impl Level {
     }
 
     #[must_use]
+    #[inline(always)]
     const fn min_usize() -> usize {
         Self::most_severe() as usize
     }
 
     #[must_use]
+    #[inline(always)]
     const fn max_usize() -> usize {
         Self::most_verbose() as usize
     }
 
     #[must_use]
+    #[inline(always)]
     pub(crate) const fn count() -> usize {
         Self::max_usize() + 1
     }
 
     /// Returns the most severe logging level.
     #[must_use]
+    #[inline(always)]
     pub const fn most_severe() -> Level {
         Level::Critical
     }
 
     /// Returns the most verbose logging level.
     #[must_use]
+    #[inline(always)]
     pub const fn most_verbose() -> Level {
         Level::Trace
     }
@@ -122,11 +128,13 @@ impl Level {
     ///
     /// This returns the same string as the `fmt::Display` implementation.
     #[must_use]
+    #[inline(always)]
     pub fn as_str(&self) -> &'static str {
         LOG_LEVEL_NAMES[*self as usize]
     }
 
     #[must_use]
+    #[inline(always)]
     pub(crate) fn as_short_str(&self) -> &'static str {
         LOG_LEVEL_SHORT_NAMES[*self as usize]
     }
@@ -152,6 +160,7 @@ impl Level {
 
 #[cfg(feature = "log")]
 impl From<log::Level> for Level {
+    #[inline(always)]
     fn from(level: log::Level) -> Self {
         match level {
             log::Level::Error => Self::Error,
@@ -164,6 +173,7 @@ impl From<log::Level> for Level {
 }
 
 impl fmt::Display for Level {
+    #[inline(always)]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.as_str())
     }
@@ -172,6 +182,7 @@ impl fmt::Display for Level {
 impl FromStr for Level {
     type Err = Error;
 
+    #[inline(always)]
     fn from_str(level: &str) -> Result<Level, Self::Err> {
         LOG_LEVEL_NAMES
             .iter()
@@ -244,6 +255,7 @@ impl LevelFilter {
     ///
     /// See the documentation of [`LevelFilter`].
     #[must_use]
+    #[inline(always)]
     pub fn compare(&self, level: Level) -> bool {
         //println!("stored={:?}", self);
         self.__compare_const(level)
@@ -252,6 +264,7 @@ impl LevelFilter {
     // Users should not use this function directly.
     #[doc(hidden)]
     #[must_use]
+    #[inline(always)]
     pub const fn __compare_const(&self, level: Level) -> bool {
         let level_num: u16 = level as u16;
 
@@ -268,6 +281,7 @@ impl LevelFilter {
     }
 
     #[must_use]
+    #[inline(always)]
     pub(crate) fn from_str_for_env(text: &str) -> Option<LevelFilter> {
         if let Ok(level) = Level::from_str(text) {
             Some(LevelFilter::MoreSevereEqual(level))
@@ -283,6 +297,7 @@ impl LevelFilter {
 
 #[cfg(feature = "log")]
 impl From<log::LevelFilter> for LevelFilter {
+    #[inline(always)]
     fn from(filter: log::LevelFilter) -> Self {
         match filter {
             log::LevelFilter::Off => Self::Off,

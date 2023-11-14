@@ -74,6 +74,7 @@ pub struct Logger {
 impl Logger {
     /// Constructs a [`LoggerBuilder`].
     #[must_use]
+    #[inline(always)]
     pub fn builder() -> LoggerBuilder {
         LoggerBuilder {
             name: None,
@@ -88,6 +89,7 @@ impl Logger {
     ///
     /// Returns `None` if the logger does not have a name.
     #[must_use]
+    #[inline(always)]
     pub fn name(&self) -> Option<&str> {
         self.name.as_ref().map(|s| s.as_ref())
     }
@@ -134,6 +136,7 @@ impl Logger {
     /// assert_eq!(logger.should_log(Level::Error), true);
     /// ```
     #[must_use]
+    #[inline(always)]
     pub fn should_log(&self, level: Level) -> bool {
         self.level_filter().compare(level)
     }
@@ -141,6 +144,7 @@ impl Logger {
     /// Logs a record.
     ///
     /// Users usually do not use this function directly, use log macros instead.
+    #[inline(always)]
     pub fn log(&self, record: &Record) {
         if !self.should_log(record.level()) {
             return;
@@ -156,12 +160,14 @@ impl Logger {
     ///
     /// Note that it is expensive, calling it frequently will affect
     /// performance.
+    #[inline(always)]
     pub fn flush(&self) {
         self.flush_sinks();
     }
 
     /// Gets the flush level filter.
     #[must_use]
+    #[inline(always)]
     pub fn flush_level_filter(&self) -> LevelFilter {
         self.flush_level_filter.load(Ordering::Relaxed)
     }
@@ -197,6 +203,7 @@ impl Logger {
 
     /// Gets the log filter level.
     #[must_use]
+    #[inline(always)]
     pub fn level_filter(&self) -> LevelFilter {
         self.level_filter.load(Ordering::Relaxed)
     }
@@ -262,12 +269,14 @@ impl Logger {
 
     /// Gets a reference to sinks in the logger.
     #[must_use]
+    #[inline(always)]
     pub fn sinks(&self) -> &[Arc<dyn Sink>] {
         &self.sinks
     }
 
     /// Gets a mutable reference to sinks in the logger.
     #[must_use]
+    #[inline(always)]
     pub fn sinks_mut(&mut self) -> &mut Sinks {
         &mut self.sinks
     }
@@ -375,6 +384,7 @@ impl Logger {
 
     // This will lose the periodic flush property, if any.
     #[must_use]
+    #[inline(always)]
     fn clone_lossy(&self) -> Self {
         Logger {
             name: self.name.clone(),
@@ -386,6 +396,7 @@ impl Logger {
         }
     }
 
+    #[inline(always)]
     fn sink_record(&self, record: &Record) {
         self.sinks.iter().for_each(|sink| {
             if let Err(err) = sink.log(record) {
@@ -398,6 +409,7 @@ impl Logger {
         }
     }
 
+    #[inline(always)]
     fn flush_sinks(&self) {
         self.sinks.iter().for_each(|sink| {
             if let Err(err) = sink.flush() {
@@ -421,6 +433,7 @@ impl Logger {
     }
 
     #[must_use]
+    #[inline(always)]
     fn should_flush(&self, record: &Record) -> bool {
         self.flush_level_filter().compare(record.level())
     }
@@ -433,6 +446,7 @@ impl Clone for Logger {
     ///
     /// Panics if [`Logger::set_flush_period`] is called with `Some` value and
     /// then clones the `Logger` instead of the `Arc<Logger>`.
+    #[inline(always)]
     fn clone(&self) -> Self {
         if self.periodic_flusher.lock_expect().is_some() {
             panic!(
@@ -477,6 +491,7 @@ impl LoggerBuilder {
     /// and cannot start or end with a whitespace.
     ///
     /// Otherwise, [`LoggerBuilder::build`] will return an error.
+    #[inline(always)]
     pub fn name<S>(&mut self, name: S) -> &mut Self
     where
         S: Into<String>,
@@ -489,12 +504,14 @@ impl LoggerBuilder {
     ///
     /// This parameter is **optional**, and defaults to
     /// `LevelFilter::MoreSevereEqual(Level::Info)`.
+    #[inline(always)]
     pub fn level_filter(&mut self, level_filter: LevelFilter) -> &mut Self {
         self.level_filter = level_filter;
         self
     }
 
     /// Add a [`Sink`].
+    #[inline(always)]
     pub fn sink(&mut self, sink: Arc<dyn Sink>) -> &mut Self {
         self.sinks.push(sink);
         self
@@ -515,6 +532,7 @@ impl LoggerBuilder {
     ///
     /// See the documentation of [`Logger::set_flush_level_filter`] for the
     /// description of this parameter.
+    #[inline(always)]
     pub fn flush_level_filter(&mut self, level_filter: LevelFilter) -> &mut Self {
         self.flush_level_filter = level_filter;
         self
@@ -526,6 +544,7 @@ impl LoggerBuilder {
     ///
     /// See the documentation of [`Logger::set_error_handler`] for the
     /// description of this parameter.
+    #[inline(always)]
     pub fn error_handler(&mut self, handler: ErrorHandler) -> &mut Self {
         self.error_handler = Some(handler);
         self
@@ -541,6 +560,7 @@ impl LoggerBuilder {
     }
 
     #[must_use]
+    #[inline(always)]
     fn preset_level(&self, is_default: bool) -> Option<LevelFilter> {
         if is_default {
             env_level::logger_level(env_level::LoggerKind::Default)
